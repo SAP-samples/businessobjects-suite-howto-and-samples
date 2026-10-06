@@ -1,0 +1,57 @@
+meta {
+  name: 05 - Save Document
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/biprws/raylight/v1/documents/{{docId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  X-SAP-LogonToken: {{logonToken}}
+}
+
+vars:pre-request {
+  docId: 5403
+}
+
+docs {
+  Saves the Webi document IN PLACE after the data source has been changed.
+
+  IMPORTANT — save semantics on the Raylight REST SDK:
+  A plain PUT /raylight/v1/documents/{docId} with an EMPTY body performs a
+  "save in place". Sending a JSON state body such as
+      { "document": { "state": "saved" } }
+  is rejected on many BI 4.x patch levels with HTTP 400 / WSR 00103
+  ("The property 'state' ... cannot be updated") — which is why the earlier
+  save appeared to do nothing.
+
+  So this request intentionally sends NO body.
+
+  Sequence to persist a change source:
+    1. 04b - Apply Mapping (Change Source)   -> POST returns "successfully updated"
+    2. 05 - Save Document (THIS request)     -> PUT documents/{docId} (no body)
+    3. 06 - Close Document Session           -> PUT occurrences/0  {"state":{"$":"Unused"}}
+    4. 07 - Logoff
+
+  Note: the mapping POST in step 1 updates the in-session document; the SAVE
+  here is what commits it back to the CMS repository. Since the source and
+  target share the same universe, the mapping resolves cleanly and the save
+  succeeds (200/204).
+}
+
+tests {
+  test("Document saved", function () {
+    expect([200, 204]).to.include(res.getStatus());
+  });
+  test("No WSR error in body", function () {
+    const b = res.getBody();
+    const s = (typeof b === "string") ? b : JSON.stringify(b || {});
+    expect(s).to.not.match(/WSR\s?00103/i);
+  });
+}

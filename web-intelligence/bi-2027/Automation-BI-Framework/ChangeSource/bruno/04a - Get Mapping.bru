@@ -1,0 +1,46 @@
+meta {
+  name: 04a - Get Mapping
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/biprws/raylight/v1/documents/{{docId}}/dataproviders/mappings?originDataproviderIds={{originDataproviderIds}}&targetDatasourceId={{targetDsId}}&skipChecking=false
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  X-SAP-LogonToken: {{logonToken}}
+}
+
+vars:pre-request {
+  docId: 5418
+  originDataproviderIds: DP0
+  targetDsId: 5406
+}
+
+script:post-response {
+  // Save the full mapping payload so the POST (04b) can send it back verbatim
+  if (res.getStatus() === 200 && res.getBody()) {
+    bru.setEnvVar("mappingPayload", JSON.stringify(res.getBody()));
+    console.log("mappingPayload stored.");
+  }
+}
+
+docs {
+  Retrieves the object mapping between the current source and the target
+  data source (universe) for a given data provider.
+  VERIFIED live: GET => 200, shape:
+  { "mappings": { "content": { "mapping": [
+      {"@status":"Ok","source":{"id":"OBJ_146"},"target":{"id":"OBJ_146"}}, ...
+  ] } } }
+  The post-response script stores the payload into env var `mappingPayload`.
+}
+
+tests {
+  test("Mapping retrieved", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

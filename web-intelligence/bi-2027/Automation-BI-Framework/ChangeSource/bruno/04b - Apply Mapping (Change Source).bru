@@ -1,0 +1,42 @@
+meta {
+  name: 04b - Apply Mapping (Change Source)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/biprws/raylight/v1/documents/{{docId}}/dataproviders/mappings?originDataproviderIds={{originDataproviderIds}}&targetDatasourceId={{targetDsId}}&skipChecking=false
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  X-SAP-LogonToken: {{logonToken}}
+}
+
+vars:pre-request {
+  docId: 5418
+  originDataproviderIds: DP0
+  targetDsId: 5406
+}
+
+body:json {
+  {{mappingPayload}}
+}
+
+docs {
+  Applies the change source by POSTing the mapping payload (captured by 04a)
+  back to the server.
+  VERIFIED live: POST => 200
+  Response: { "success": { "message": "... has been successfully updated.", "id": "<docId>" } }
+
+  Run 04a first (it stores `mappingPayload`), then run this request.
+}
+
+tests {
+  test("Change source applied", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

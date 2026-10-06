@@ -1,0 +1,45 @@
+meta {
+  name: 01 - Logon
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/biprws/logon/long
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "userName": "{{user}}",
+    "password": "{{password}}",
+    "auth": "{{auth}}",
+    "cms": "{{cms}}"
+  }
+}
+
+script:post-response {
+  // Capture the logon token returned by the BI RESTful SDK
+  if (res.getStatus() === 200) {
+    const token = res.getHeader("X-SAP-LogonToken") || (res.getBody() && res.getBody().logonToken);
+    if (token) {
+      const clean = token.toString().replace(/^"|"$/g, "");
+      bru.setEnvVar("logonToken", clean);
+      console.log("Logon token stored.");
+    } else {
+      console.log("WARNING: No logon token found in response.");
+    }
+  }
+}
+
+tests {
+  test("Logon successful", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
