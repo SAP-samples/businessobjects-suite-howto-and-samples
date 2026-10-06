@@ -1,0 +1,34 @@
+meta {
+  name: 03 - Get Document DataProviders
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/biprws/raylight/v1/documents/{{docId}}/dataproviders
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  X-SAP-LogonToken: {{logonToken}}
+}
+
+vars:pre-request {
+  docId: 5418
+}
+
+docs {
+  Lists the data providers (queries) of a Webi document.
+  VERIFIED live response shape:
+  { "dataproviders": { "dataprovider": [
+      {"id":"DP0","name":"Query 1","dataSourceId":"5406","dataSourceType":"unx", ...}
+  ] } }
+}
+
+tests {
+  test("Data providers retrieved", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
