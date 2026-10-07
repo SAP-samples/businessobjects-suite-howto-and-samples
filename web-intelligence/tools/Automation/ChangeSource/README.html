@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebI Change Source | Quick Start</title>
+  <style>
+    :root {
+      --ink: #18232f; --muted: #526273; --line: #d7e0e8;
+      --blue: #075985; --blue-soft: #e0f2fe;
+      --green: #166534; --green-soft: #dcfce7;
+      --amber: #92400e; --amber-soft: #ffedd5;
+      --shadow: 0 16px 44px rgba(24,35,47,.10);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: linear-gradient(135deg,#eaf4f8 0%,#f9fbfc 45%,#f7efe2 100%); font: 16px/1.6 Georgia,"Times New Roman",serif; }
+    .page { max-width: 900px; margin: 0 auto; padding: 28px 20px 64px; }
+    header { padding: 38px 42px; color: #f8fbfd; background: linear-gradient(120deg,#12344a,#075985 58%,#0f766e); border-radius: 10px; box-shadow: var(--shadow); }
+    .eyebrow { margin: 0 0 8px; color: #bde3ef; font: 700 13px/1.2 "Segoe UI",Tahoma,sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+    h1,h2,h3 { font-family: "Segoe UI",Tahoma,sans-serif; line-height: 1.2; }
+    h1 { max-width: 760px; margin: 0; font-size: clamp(1.8rem,5vw,3rem); }
+    .lede { max-width: 720px; margin: 14px 0 0; color: #e0f2fe; font-size: 1.05rem; }
+    main { margin-top: 22px; }
+    section { margin: 32px 0; }
+    h2 { margin: 0 0 14px; color: #12344a; font-size: 1.55rem; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+    h3 { margin: 20px 0 8px; color: var(--blue); font-size: 1.1rem; }
+    p { margin: 8px 0 14px; }
+    .step { position: relative; padding: 20px 20px 20px 72px; background: rgba(255,255,255,.90); border: 1px solid var(--line); border-radius: 8px; margin: 14px 0; box-shadow: 0 4px 14px rgba(24,35,47,.05); }
+    .step-number { position: absolute; left: 18px; top: 18px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: white; background: var(--blue); font: 700 17px "Segoe UI",Tahoma,sans-serif; }
+    .step h3 { margin-top: 0; }
+    .callout { padding: 14px 18px; border-left: 5px solid var(--blue); background: var(--blue-soft); border-radius: 0 6px 6px 0; margin: 14px 0; }
+    .callout.warning { border-left-color: #ea580c; background: var(--amber-soft); color: var(--amber); }
+    .callout.success { border-left-color: #16a34a; background: var(--green-soft); color: var(--green); }
+    code,pre { font-family: Consolas,"Courier New",monospace; font-size: .9em; }
+    code { padding: 2px 6px; color: #164e63; background: #e6f2f5; border-radius: 3px; }
+    pre { overflow-x: auto; margin: 10px 0 16px; padding: 16px; border-radius: 6px; color: #dbeafe; background: #18232f; border: 1px solid #2a3a4a; }
+    pre code { padding: 0; color: inherit; background: transparent; }
+    table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,.90); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    th,td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: #eaf2f6; font: 700 14px "Segoe UI",Tahoma,sans-serif; color: #12344a; }
+    tr:last-child td { border-bottom: 0; }
+    ul,ol { margin: 8px 0; padding-left: 24px; }
+    details { margin: 14px 0; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.85); }
+    summary { padding: 14px 18px; font: 700 1rem "Segoe UI",Tahoma,sans-serif; color: var(--blue); cursor: pointer; list-style: none; }
+    summary::before { content: "\25B6  "; font-size: .8em; }
+    details[open] summary::before { content: "\25BC  "; }
+    details > *:not(summary) { padding: 0 18px 16px; }
+    .small { color: var(--muted); font-size: .9rem; }
+    footer { padding-top: 18px; color: var(--muted); font-size: .88rem; border-top: 1px solid var(--line); margin-top: 40px; }
+    @media (max-width: 640px) { header { padding: 24px 20px; } .page { padding-inline: 12px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <p class="eyebrow">Automation / ChangeSource</p>
+    <h1>WebI Change Source &mdash; Quick Start</h1>
+    <p class="lede">Bulk-change the data source of Web Intelligence documents using PowerShell and the BI REST API. No extra software needed on Windows.</p>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>What this does</h2>
+      <p>This tool opens one or more Web Intelligence documents via the BI REST API, finds their data providers (queries), and changes the universe/data source to a target data source of your choice. It can process many document IDs in a single run.</p>
+        <div class="callout">
+        <strong>It does not create the target data source.</strong>
+        The target data source must already exist and be accessible in your SAP BusinessObjects environment before you run this tool.
+      </div>
+    </section>
+
+    <section>
+      <h2>Before you start</h2>
+      <table>
+        <thead><tr><th>What you need</th><th>Example / Notes</th></tr></thead>
+        <tbody>
+          <tr><td>SAP BusinessObjects server URL</td><td><code>http://myserver:8080</code>&nbsp;&mdash; Tomcat root, <strong>no <code>/biprws</code></strong></td></tr>
+          <tr><td>CMS address</td><td><code>myserver:6400</code></td></tr>
+          <tr><td>BI user credentials</td><td>Must be able to open the documents and use the target universe</td></tr>
+          <tr><td>Target data source <strong>SI_ID</strong></td><td>e.g. <code>5406</code> &mdash; see below</td></tr>
+          <tr><td>WebI document <strong>SI_IDs</strong></td><td>e.g. <code>5418,5403,62362</code> &mdash; see below</td></tr>
+          <tr><td>Windows PowerShell 5.1</td><td>Built-in on Windows&nbsp;10/11 &mdash; no extra install needed</td></tr>
+        </tbody>
+      </table>
+
+      <h3>How to find SI_IDs</h3>
+      <p>
+        <strong>Target data source</strong> &mdash; In the <strong>CMC</strong>, go to <em>Universes</em>, right-click the universe &rarr; <em>Properties &rarr; General</em>.
+        The SI_ID is shown there (e.g.&nbsp;<code>5406</code>).<br>
+        Or query the REST API:
+      </p>
+      <pre><code>GET http://myserver:8080/biprws/infostore?query=SELECT SI_ID,SI_NAME FROM CI_INFOOBJECTS WHERE SI_NAME='My Universe'</code></pre>
+
+      <p>
+        <strong>WebI documents</strong> &mdash; In the CMC or BI Launchpad, open the document &rarr; <em>Properties &rarr; General &rarr; SI_ID</em>.<br>
+        Or list all documents:
+      </p>
+      <pre><code>GET http://myserver:8080/raylight/v1/documents</code></pre>
+      <p class="small">Returns a JSON list with <code>id</code> (= SI_ID), <code>name</code>, and <code>folderId</code> for each document.</p>
+    </section>
+
+    <section>
+      <h2>Step-by-step</h2>
+
+      <div class="step">
+        <span class="step-number">1</span>
+        <h3>Clone the repository</h3>
+        <pre><code>git clone https://github.com/SAP-samples/businessobjects-suite-howto-and-samples
+cd businessobjects-suite-howto-and-samples\web-intelligence\tools\Automation\ChangeSource</code></pre>
+      </div>
+
+      <div class="step">
+        <span class="step-number">2</span>
+        <h3>Create your local config</h3>
+        <pre><code>Copy-Item .\bruno\environments\my-env.bru.template .\Powershell\environments\my-env.bru</code></pre>
+        <p>Open <code>Powershell\environments\my-env.bru</code> in any text editor and fill in your values:</p>
+        <pre><code>vars {
+  baseUrl: http://myserver:8080     # Tomcat root &mdash; do NOT include /biprws
+  cms: myserver:6400
+  user: alice
+  password: mysecretpassword
+  auth: secEnterprise               # secEnterprise | secLDAP | secWinAD | secSAPR3
+  targetuniverse: 5406              # SI_ID of the target data source
+  runnerAction: test                # keep "test" until you have reviewed the dry run
+  strategyMode: default
+  docIds: 5418,5403,62362           # comma-separated WebI document SI_IDs
+  logonToken:           # leave blank &mdash; filled at runtime by the script
+  mappingPayload:        # leave blank &mdash; filled at runtime by the script
+  mappingStrategies:     # leave blank to use the safe default (see Mapping strategies section)
+}</code></pre>
+        <div class="callout"><strong>Where does each launcher look?</strong> The <code>.bat</code> files resolve <code>environments\my-env.bru</code> relative to their own folder: <code>Powershell\</code> reads <code>Powershell\environments\my-env.bru</code>; <code>java\</code> reads <code>java\environments\my-env.bru</code>. The template at <code>bruno\environments\my-env.bru.template</code> is the source to copy from &mdash; create one copy per runner you use.</div>
+        <div class="callout warning">Set <code>runnerAction: test</code> first. Only switch to <code>change</code> after reviewing the dry-run output.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number">3</span>
+        <h3>Dry run &mdash; verify the mapping</h3>
+        <pre><code>cd .\Powershell
+.\Run-ChangeSource-PowerShell.bat -Test</code></pre>
+        <p>The <code>.bat</code> automatically resolves the path to <code>bruno\environments\my-env.bru</code> relative to its own location &mdash; you don&rsquo;t need to <code>cd</code> back to the repo root.</p>
+        <p>The script logs in, opens each document, computes the source-to-target mapping, prints the result, and logs off. <strong>No document is saved or changed.</strong> Documents with multiple queries (data providers) are fully supported &mdash; each query is processed individually.</p>
+        <p>Override <code>docIds</code> for a single run without editing the config:</p>
+        <pre><code>.\Run-ChangeSource-PowerShell.bat -DocIds &quot;5418,5403&quot; -Test</code></pre>
+        <div class="callout success">
+          <strong>What to look for:</strong> for each query you should see <code>[MAP:...] X object mapping(s), 0 not-Ok</code>. Any <code>not-Ok</code> count above zero means some report objects could not be matched to the target &mdash; check the target SI_ID and consider using <code>strategyMode: custom</code>.
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number">4</span>
+        <h3>Apply the change</h3>
+        <p>Once the dry-run output looks correct, run in change mode:</p>
+        <pre><code>.\Run-ChangeSource-PowerShell.bat</code></pre>
+        <p>The script applies the mapping and saves each document. Lines tagged <code>[CHANGE]</code> confirm each data provider was updated.</p>
+        <div class="callout warning"><strong>Save is automatic and immediate.</strong> As soon as a data provider is successfully changed, the document is saved with no further confirmation. If no data provider was changed (e.g. all mappings failed), the document is not saved. Keep a backup according to your team&rsquo;s operational practice before running this step.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Mapping strategies</h2>
+      <p>The <code>strategyMode</code> config value controls how report objects in the source data provider are matched to objects in the target data source.</p>
+      <table>
+        <thead><tr><th><code>strategyMode</code></th><th>Behaviour</th></tr></thead>
+        <tbody>
+          <tr><td><code>default</code></td><td>Server&rsquo;s built-in matching &mdash; plain GET, no strategies body sent.</td></tr>
+          <tr><td><code>custom</code></td><td>You control the matching rules via the <code>mappingStrategies</code> JSON variable.</td></tr>
+        </tbody>
+      </table>
+      <p>When <code>strategyMode: custom</code> and <code>mappingStrategies</code> is blank, the following safe default is used automatically:</p>
+      <pre><code>{
+  "strategies": {
+    "strategy": [
+      { "name": "SamePath",          "enabled": true  },
+      { "name": "SameTechnicalName", "enabled": true  },
+      { "name": "SameName",          "enabled": true  },
+      { "name": "Removal",           "enabled": false }
+    ]
+  }
+}</code></pre>
+      <table>
+        <thead><tr><th>Strategy</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>SamePath</code></td><td>Match objects by folder path in the data source.</td></tr>
+          <tr><td><code>SameTechnicalName</code></td><td>Match by technical name.</td></tr>
+          <tr><td><code>SameName</code></td><td>Match by display name.</td></tr>
+          <tr><td><code>Removal</code></td><td><strong><code>false</code> (recommended)</strong> &mdash; unmatched report objects are kept. Set to <code>true</code> to remove them.</td></tr>
+        </tbody>
+      </table>
+      <p>To override, paste your JSON directly into the <code>mappingStrategies</code> line in <code>my-env.bru</code>:</p>
+      <pre><code>mappingStrategies: {"strategies":{"strategy":[{"name":"SamePath","enabled":true},{"name":"Removal","enabled":false}]}}</code></pre>
+      <p>Or pass <code>-StrategyMode custom</code> on the command line &mdash; the script uses the value from <code>mappingStrategies</code> in the config, or falls back to the safe default if it is blank.</p>
+      <div class="callout warning"><strong>Strategies apply to the compute step only.</strong> They must be sent on the mapping GET request. Sending strategies on the POST (apply) request is rejected by the server with <code>400 WSR 00103</code>.</div>
+    </section>
+
+    <section>
+      <h2>Troubleshooting</h2>
+      <table>
+        <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Env file not found</td><td>Confirm <code>Powershell\environments\my-env.bru</code> exists (copy from <code>bruno\environments\my-env.bru.template</code>). Each launcher reads the env file from its own folder.</td></tr>
+          <tr><td>Logon failed (401)</td><td>Check <code>baseUrl</code> (no trailing <code>/biprws</code>), <code>cms</code>, <code>user</code>, <code>password</code>, <code>auth</code>.</td></tr>
+          <tr><td>Document not found (404)</td><td>Verify the document SI_ID in <code>docIds</code> in the CMC.</td></tr>
+          <tr><td>Not authorized (403)</td><td>The user must have rights to open the document and use the target universe.</td></tr>
+          <tr><td>Wrong universe in mapping</td><td>Stop before change mode. Verify <code>targetuniverse</code> SI_ID in the CMC.</td></tr>
+          <tr><td>No documents processed</td><td>Check that <code>docIds</code> is set in the config or passed with <code>-DocIds</code>.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Alternative runners</h2>
+      <p>PowerShell is the simplest option on Windows. The same <code>my-env.bru</code> config file is read by all runners.</p>
+
+      <details>
+        <summary>Bruno &mdash; interactive, step-by-step exploration</summary>
+        <p>Useful when you want to inspect each HTTP request and response individually.</p>
+        <ol>
+          <li>Install the <a href="https://www.usebruno.com/">Bruno desktop app</a> (free, v1.x or later).</li>
+          <li>Open the <code>bruno/</code> folder as a collection.</li>
+          <li>Select the <strong>my-env</strong> environment.</li>
+          <li>Run <strong>00 - Bulk Change Source (All-in-One)</strong> for a full run, or use requests <code>01</code>&ndash;<code>07</code> individually for debugging.</li>
+        </ol>
+      </details>
+
+      <details>
+        <summary>Java &mdash; no JAR required</summary>
+        <p>Requires a JDK (not just a JRE) with <code>javac</code> on PATH. The launcher compiles <code>java\ChangeSource.java</code> automatically.</p>
+        <pre><code>cd ChangeSource\java
+Run-ChangeSource-JavaNoJar.bat --test                         # dry run
+Run-ChangeSource-JavaNoJar.bat                                # apply
+Run-ChangeSource-JavaNoJar.bat --docIds 5418,5403 --test      # override docIds</code></pre>
+        <p>If <code>javac</code> is missing: install a JDK (e.g. Eclipse Temurin 17 or 21), set <code>JAVA_HOME</code> to the JDK folder, add <code>%JAVA_HOME%\bin</code> to PATH, then open a new terminal.</p>
+      </details>
+    </section>
+
+  </main>
+
+  <footer>Keep <code>environments\my-env.bru</code> out of source control &mdash; it contains credentials. The template (<code>my-env.bru.template</code>) is tracked by git and safe to commit.</footer>
+</div>
+</body>
+</html>
