@@ -1,0 +1,82 @@
+meta {
+  name: 04a2 - Get Mapping (with Strategies)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/biprws/raylight/v1/documents/{{docId}}/dataproviders/mappings?originDataproviderIds={{originDataproviderIds}}&targetDatasourceId={{targetDsId}}&skipChecking=false
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  X-SAP-LogonToken: {{logonToken}}
+}
+
+vars:pre-request {
+  docId: 5418
+  originDataproviderIds: DP0
+  targetDsId: 5406
+}
+
+body:json {
+  {
+    "strategies": {
+      "strategy": [
+        { "name": "SamePath", "enabled": true },
+        { "name": "SameTechnicalName", "enabled": true },
+        { "name": "SameName", "enabled": true },
+        { "name": "Removal", "enabled": false }
+      ]
+    }
+  }
+}
+
+script:post-response {
+  // Store the strategy-driven mapping so 04b can POST it back to APPLY the change.
+  if (res.getStatus() === 200 && res.getBody()) {
+    bru.setEnvVar("mappingPayload", JSON.stringify(res.getBody()));
+    console.log("mappingPayload (strategy-driven) stored.");
+  } else {
+    console.log("Strategy mapping failed: status " + res.getStatus());
+  }
+}
+
+docs {
+  STRATEGY-DRIVEN MAPPING — computes the object mapping using strategies YOU
+  control (safer alternative to 04a's default GET).
+
+  VERIFIED LIVE against this server:
+    GET  .../mappings?...            -> 200  (compute with default strategies)
+    GET  .../mappings?...  + body    -> 200  (compute with YOUR strategies)  << THIS
+    POST .../mappings?...  + strategies body -> 400 WSR 00103 (NOT allowed)
+
+  So the `strategies` body must be sent on the **GET** (compute) request — NOT
+  on POST. The POST verb is reserved for APPLYING an already-computed mapping
+  (that's what 04b does, posting the mapping payload — no `strategies` element).
+
+  STRATEGIES:
+    SamePath / SameTechnicalName / SameName  -> how objects are matched
+    Removal (disabled)                       -> KEEP unmatched objects (don't
+                                                delete report objects)
+
+  NOTE: when the source & target universes share identical object ids, the
+  mapping comes back all "Ok" regardless of strategies. Strategies matter when
+  ids / names differ between universes.
+
+  FLOW:
+    1. 04a2 (THIS)  -> GET + strategies  => strategy-driven mapping, stored in
+                       env var `mappingPayload`.
+    2. 04b          -> POST `mappingPayload` back to the SAME url => APPLIES it.
+    3. 05           -> PUT documents/{docId} (empty body) => SAVE.
+    4. 06 / 07      -> close session / logoff.
+}
+
+tests {
+  test("Strategy mapping retrieved", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

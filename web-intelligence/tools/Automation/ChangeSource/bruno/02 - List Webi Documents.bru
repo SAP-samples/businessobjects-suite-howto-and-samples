@@ -1,0 +1,27 @@
+meta {
+  name: 02 - List Webi Documents
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/biprws/raylight/v1/documents
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  X-SAP-LogonToken: {{logonToken}}
+}
+
+docs {
+  Returns Web Intelligence documents: { documents: { document: [ {id, cuid, name, folderId, ...} ] } }
+  VERIFIED live: GET /biprws/raylight/v1/documents => 200
+}
+
+tests {
+  test("Documents retrieved", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
