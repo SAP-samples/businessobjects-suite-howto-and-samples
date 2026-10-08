@@ -1,8 +1,8 @@
-# SAP BusinessObjects BI Suite — How-To and Samples
+# SAP-samples/businessobjects-suite-howto-and-samples
 
 This repository contains practical how-to guides and code samples for the **SAP BusinessObjects BI Suite** (SAP BI Platform, Web Intelligence, Crystal Reports, and related APIs).
 
-## Contents
+# Containing Files
 
 | Folder | Description |
 |--------|-------------|
@@ -11,12 +11,14 @@ This repository contains practical how-to guides and code samples for the **SAP 
 | `web-intelligence/tools/Automation/ChangeSource/` | Automate data source changes across WebI documents (Bruno, PowerShell, Java) |
 | `bi-platform/` | Samples for the SAP BI Platform (CMS, scheduling, lifecycle management) |
 
-## Requirements
+# SAP BusinessObjects BI Suite — How-To and Samples
 
 Each sample folder contains its own README with specific requirements. In general:
 - Access to a running SAP BusinessObjects BI Platform
 - Credentials with sufficient rights on the CMS
 - See individual folder READMEs for tool-specific prerequisites (Bruno, PowerShell, Java JDK, etc.)
+- 
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/businessobjects-suite-howto-and-samples)](https://api.reuse.software/info/github.com/SAP-samples/businessobjects-suite-howto-and-samples)
 
 ## Download and Installation
 
